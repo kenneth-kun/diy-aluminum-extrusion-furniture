@@ -29,9 +29,15 @@ index.html          ← 双击，浏览器打开项目首页
 ### 方式 2：本地起个静态服务（推荐，复制链接、截图更稳）
 
 ```bash
-cd diy-furniture-planner   # 或你 clone 下来的目录名
+cd diy-aluminum-extrusion-furniture   # 或你 clone 下来的目录名
 python3 -m http.server 8000
 # 打开 http://localhost:8000/
+```
+
+### 在线版（GitHub Pages，开启后可用）
+
+```
+https://kenneth-kun.github.io/diy-aluminum-extrusion-furniture/
 ```
 
 ### 方式 3：macOS 桌面快捷方式
