@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>亚克力展示盒 · 悬停面板规划器</title>
+<link rel="stylesheet" href="cabinet.css">
+<script>window.onerror=function(m,s,l,c){document.title="ERR: "+m+" @"+l+":"+c;return false;};</script>
+<style>
+  #preview{padding:6px 8px 10px;display:flex;justify-content:center}
+  #preview svg{display:block;height:660px;width:auto;max-width:100%}
+  @media (max-width:560px){#preview svg{max-height:420px}}
+  .miniTabs{display:flex;gap:6px;margin:0 0 10px}
+  .miniTabs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 11px;font-size:12px;color:#5b6b73;cursor:pointer}
+  .miniTabs button.on{background:#e8f4f6;border-color:#b6dbe2;color:#0f6b78;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>亚克力展示盒 · 悬停面板</h1>
+  <p>每层一个粘好的亚克力盒 + 前沿一根铝梁 + 两片任意停合页。层数靠叠，加层就是再放一个盒子上去。　<a href="../index.html" style="color:var(--accent)">← 项目首页</a>　<a href="index.html" style="color:var(--accent)">光轴展示架 →</a>　<a href="tray.html" style="color:var(--accent)">桌面柜 →</a>　<a href="cabinet.html" style="color:var(--accent)">抽屉柜 →</a></p>
+</header>
+
+<div class="wrap">
+  <!-- ================= 左：参数 ================= -->
+  <section class="card left">
+    <div class="group">
+      <h2>盒体内部尺寸（放得下什么）</h2>
+      <div class="row">
+        <label for="W">内宽</label>
+        <div class="val"><input type="number" id="W" data-k="W" min="15" max="80" step="1"><span class="unit">cm</span></div>
+      </div>
+      <div class="row">
+        <label for="D">内深</label>
+        <div class="val"><input type="number" id="D" data-k="D" min="12" max="50" step="1"><span class="unit">cm</span></div>
+      </div>
+      <div class="row">
+        <label for="H">单层净高</label>
+        <div class="val"><input type="number" id="H" data-k="H" min="12" max="60" step="1"><span class="unit">cm</span></div>
+      </div>
+      <p class="hint" id="sizeHint"></p>
+    </div>
+
+    <div class="group">
+      <h2>层数</h2>
+      <div class="seg" id="nSeg">
+        <button data-n="1">1</button>
+        <button data-n="2">2</button>
+        <button data-n="3">3</button>
+        <button data-n="4">4</button>
+        <button data-n="5">5</button>
+        <button data-n="6">6</button>
+      </div>
+      <p class="hint" id="nHint"></p>
+    </div>
+
+    <div class="group">
+      <h2>材料与五金</h2>
+      <div class="row"><label for="sheet">亚克力</label></div>
+      <select id="sheet" data-k="sheet"></select>
+      <p class="hint" id="sheetHint"></p>
+      <div class="row" style="margin-top:12px"><label for="rail">前沿铝梁</label></div>
+      <select id="rail" data-k="rail"></select>
+      <p class="hint" id="railHint"></p>
+      <div class="row" style="margin-top:12px"><label for="hinge">门 / 合页</label></div>
+      <select id="hinge" data-k="hinge"></select>
+      <p class="hint" id="hingeHint"></p>
+      <div class="row" style="margin-top:12px"><label for="lid">顶盖</label></div>
+      <select id="lid" data-k="lid"></select>
+      <div class="row" style="margin-top:12px"><label for="feet">脚</label></div>
+      <select id="feet" data-k="feet"></select>
+    </div>
+
+    <div class="group">
+      <details>
+        <summary>这些数字怎么来的</summary>
+        <p class="hint" style="margin-top:10px;line-height:1.75">
+          外廓 = 内空 + 2×板厚；单层高 = 净高 + 前沿铝梁（20 mm），因为梁正好压在这一层的上沿。<br>
+          门高 = 净高 − 4 mm（上下各留 2 mm 缝）；门宽 = 内宽 − 2 mm；外宽超过 640 mm 自动改双开门。<br>
+          叠层不做螺丝：每层盒体是自己的承重单元，放上去靠 4 个 φ6 定位销对位，3 层以上再加 VHB 胶。<br>
+          门重 = 面积 × 板厚 × 1.19 g/cm³，用来校核合页够不够力（每片合页按 4–5 kg 算）。
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= 右：结果 ================= -->
+  <section class="card pad">
+    <div class="tabs" id="tabs">
+      <button data-tab="plan" class="on">设计</button>
+      <button data-tab="cut">切料表</button>
+      <button data-tab="bom">采购</button>
+      <button data-tab="install">装配</button>
+    </div>
+
+    <!-- 设计 -->
+    <div id="tab-plan">
+      <div class="hero">
+        <div><b id="hN">3</b><span>层（可无限加）</span></div>
+        <div><b id="hD">310×260</b><span>外廓 宽×深 mm</span></div>
+        <div><b id="hP">¥711</b><span>整套预估</span></div>
+      </div>
+      <p class="reason" id="explain"></p>
+      <div class="dim2">
+        <div><span>总高（含脚）</span><b id="dH">—</b></div>
+        <div><span>单层高</span><b id="dL">—</b></div>
+        <div><span>门板</span><b id="dDoor">—</b></div>
+        <div><span>整箱重量</span><b id="dW">—</b></div>
+      </div>
+      <div class="preview" id="preview"></div>
+      <div class="miniTabs" id="angles">
+        <button data-a="0" class="on">关门</button>
+        <button data-a="35">门开 35°</button>
+        <button data-a="70">门开 70°</button>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <div class="acts">
+        <button class="primary" id="btnCopy">复制切料清单</button>
+        <button id="btnCsv">下载 CSV</button>
+      </div>
+    </div>
+
+    <!-- 切料表 -->
+    <div id="tab-cut" class="hidden">
+      <h2 style="font-size:13px;margin:0 0 4px">亚克力切料（给亚克力厂）</h2>
+      <p class="hint" style="margin:0 0 6px" id="cutWords"></p>
+      <div class="tableWrap">
+        <table id="cutTbl">
+          <thead><tr><th>名称</th><th>尺寸（长边）</th><th class="n">数量</th><th>备注</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr><td colspan="3">切割总长 / 板材面积</td><td class="n" id="cutSum">—</td></tr></tfoot>
+        </table>
+      </div>
+
+      <h2 style="font-size:13px;margin:20px 0 4px">铝梁切料</h2>
+      <p class="hint" style="margin:0 0 6px" id="cutAlWords"></p>
+      <div class="tableWrap">
+        <table id="alTbl">
+          <thead><tr><th>用途</th><th>长度</th><th class="n">数量</th><th class="n">小计</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr><td colspan="3">铝梁总长</td><td class="n" id="alSum">—</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="acts">
+        <button class="primary" id="btnCopy2">复制全部</button>
+        <button id="btnCsv2">下载 CSV</button>
+      </div>
+    </div>
+
+    <!-- 采购 -->
+    <div id="tab-bom" class="hidden">
+      <h2 style="font-size:13px;margin:0 0 8px">要买的东西</h2>
+      <div class="tableWrap">
+        <table id="bomTbl">
+          <thead><tr><th>项目</th><th>规格</th><th class="n">金额</th><th>搜同款</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="total"><div><b id="totalTxt">¥0</b><br><span id="totalRange">区间 —</span></div>
+        <span style="font-size:11.5px;color:#4b6b74">不含运费</span></div>
+      <div class="acts">
+        <button class="primary" id="btnCopy3">复制采购清单</button>
+        <button id="btnCsv3">下载 CSV</button>
+      </div>
+      <p class="buyhint">亚克力是主料（5 mm 约 280 元/㎡，切割按延米算）；盒体让厂里粘好再发，别自己上手——粘花的板子不能退。</p>
+    </div>
+
+    <!-- 装配 -->
+    <div id="tab-install" class="hidden">
+      <h2 style="font-size:15px;margin:0 0 4px">装配顺序</h2>
+      <p class="hint" id="stepIntro" style="margin:0 0 4px"></p>
+      <div class="keynum" id="keynum"></div>
+      <div id="steps"></div>
+      <h3 style="font-size:12px;margin:18px 0 0;color:var(--muted)">工具</h3>
+      <div class="toolrow" id="tools"></div>
+      <h3 style="font-size:12px;margin:18px 0 0;color:var(--muted)">别踩这几个坑</h3>
+      <div class="msgs" id="pits"></div>
+      <div class="acts"><button class="primary" id="btnPrint">打印 / 存为 PDF</button></div>
+    </div>
+  </section>
+</div>
+
+<script src="display-core.js"></script>
+<script>
+(function () {
+  "use strict";
+  var T = window.DisplayCore;
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = "display-planner:v1";
+
+  var state = { W: 300, D: 250, H: 250, N: 3, sheet: "5", rail: "2020", hinge: "friction", lid: "full", feet: "pad", angle: 0 };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    delete saved.angle;                     // 角度只是看图用的，不记忆
+    Object.assign(state, saved);
+  } catch (e) {}
+  if (typeof state.N === "string") state.N = Number(state.N) || 3;
+
+  /* ---------- 下拉 ---------- */
+  function fillSelect(el, map) {
+    el.innerHTML = "";
+    Object.keys(map).forEach(function (k) {
+      var o = document.createElement("option");
+      o.value = k; o.textContent = map[k].label;
+      el.appendChild(o);
+    });
+  }
+  fillSelect($("sheet"), T.SHEETS);
+  fillSelect($("rail"), T.RAILS);
+  fillSelect($("hinge"), T.HINGES);
+  fillSelect($("lid"), T.LIDS);
+  fillSelect($("feet"), T.FEETS);
+
+  /* ---------- 同步 ---------- */
+  function syncInputs() {
+    ["W", "D", "H"].forEach(function (k) { $(k).value = Math.round(state[k] / 10); });
+    ["sheet", "rail", "hinge", "lid", "feet"].forEach(function (k) { $(k).value = state[k]; });
+    Array.prototype.forEach.call(document.querySelectorAll("#nSeg button"), function (b) {
+      b.classList.toggle("on", Number(b.dataset.n) === state.N);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#angles button"), function (b) {
+      b.classList.toggle("on", Number(b.dataset.a) === state.angle);
+    });
+  }
+
+  ["W", "D", "H"].forEach(function (k) {
+    $(k).addEventListener("input", function () {
+      var v = Number(this.value);
+      if (!v) return;
+      state[k] = v * 10;
+      render();
+    });
+  });
+  ["sheet", "rail", "hinge", "lid", "feet"].forEach(function (k) {
+    $(k).addEventListener("change", function () { state[k] = this.value; render(); });
+  });
+  $("nSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-n]"); if (!b) return;
+    state.N = Number(b.dataset.n); syncInputs(); render();
+  });
+  $("angles").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-a]"); if (!b) return;
+    state.angle = Number(b.dataset.a); syncInputs(); render();
+  });
+
+  /* ---------- 标签页 ---------- */
+  $("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-tab]"); if (!b) return;
+    setTab(b.dataset.tab);
+  });
+  function setTab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll("#tabs button"), function (b) {
+      b.classList.toggle("on", b.dataset.tab === name);
+    });
+    ["plan", "cut", "bom", "install"].forEach(function (t) {
+      $("tab-" + t).classList.toggle("hidden", t !== name);
+    });
+  }
+
+  /* ---------- 渲染 ---------- */
+  var last = null;
+  function render() {
+    var p = T.computeDisplay(state);
+    last = p;
+    try {
+      var keep = JSON.parse(JSON.stringify(state)); delete keep.angle;
+      localStorage.setItem(KEY, JSON.stringify(keep));
+    } catch (e) {}
+
+    $("hN").textContent = p.N;
+    $("hD").textContent = p.Wo + "×" + p.Do;
+    $("hP").textContent = "¥" + p.total;
+    $("explain").textContent = p.explain;
+    $("dH").textContent = p.H + " mm";
+    $("dL").textContent = p.Hl + " mm";
+    $("dDoor").textContent = p.doors ? p.doorW + "×" + p.doorH : "无门";
+    $("dW").textContent = p.weight.toFixed(1) + " kg";
+
+    $("sizeHint").textContent = "内空 " + p.Wi + "×" + p.Di + "×" + p.Hi + " mm；" +
+      (p.Di < 180 ? "常见手办底座 120–180 mm，内深刚够，斜放更省。" : "大多数 1/6 手办和车模都放得下。");
+    $("nHint").textContent = p.N + " 层 × 单层 " + p.Hl + " mm，总高 " + p.H + " mm" +
+      (p.N > 1 ? "；加层不用改结构，再买一个盒体即可。" : "。");
+    $("sheetHint").textContent = p.sheet.note;
+    $("railHint").textContent = p.rail.note;
+    $("hingeHint").textContent = p.hinge.note;
+    $("cutWords").textContent = "下单话术：「" + p.sheet.label + " 透明亚克力，按尺寸激光切割，" +
+      "盒体（侧板+后板+底板）粘好发货；门板顶部开 R25 半圆手指槽，所有边倒角」。";
+    $("cutAlWords").textContent = "下单话术：「" + p.rail.label + "，按长度切 " + (p.N + (p.lid.th ? 1 : 0)) +
+      " 根，两端攻 M4（装端盖和合页），切口去毛刺」。";
+
+    var all = p.warnings.concat(p.notes);
+    $("msgs").innerHTML = all.length
+      ? all.map(function (w, i) {
+          var cls = i < p.warnings.length ? "warn" : "tip";
+          return '<div class="msg ' + cls + '">' + esc(w) + "</div>";
+        }).join("")
+      : '<div class="msg tip">尺寸合理，可以直接下单。</div>';
+
+    $("preview").innerHTML = svg(p, state.angle || 0);
+
+    // 亚克力切料
+    $("cutTbl").querySelector("tbody").innerHTML = p.cutAc.map(function (c) {
+      return "<tr><td class='name'>" + esc(c.name) + "</td><td class='n'>" + c.len + " mm</td><td class='n'>" +
+        c.qty + " 片</td><td class='spec'>" + esc(c.group) + "</td></tr>";
+    }).join("");
+    $("cutSum").textContent = p.cutAcTotalM.toFixed(2) + " m / " + p.area.toFixed(2) + " ㎡";
+
+    // 铝梁
+    $("alTbl").querySelector("tbody").innerHTML = p.cutAl.map(function (c) {
+      return "<tr><td class='name'>" + esc(c.name) + "</td><td class='n'>" + c.len + " mm</td><td class='n'>" +
+        c.qty + " 根</td><td class='n spec'>" + (c.len * c.qty / 1000).toFixed(2) + " m</td></tr>";
+    }).join("");
+    $("alSum").textContent = p.cutAlTotalM.toFixed(2) + " m";
+
+    // 装配
+    var s = T.buildSteps(p);
+    $("stepIntro").textContent = s.intro;
+    $("keynum").innerHTML = s.keyNumbers.map(function (k) {
+      return "<div><span>" + esc(k.k) + "</span><b>" + esc(k.v) + "</b></div>";
+    }).join("");
+    $("steps").innerHTML = s.steps.map(function (st, i) {
+      return '<div class="step"><div class="no">' + (i + 1) + "</div><div><h3>" + esc(st.title) + "</h3>" +
+        "<p>" + esc(st.desc) + "</p><div class='check'>" + esc(st.check) + "</div></div></div>";
+    }).join("");
+    $("tools").innerHTML = s.tools.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+    $("pits").innerHTML = s.pitfalls.map(function (t) { return '<div class="msg warn">' + esc(t) + "</div>"; }).join("");
+
+    // 采购
+    $("bomTbl").querySelector("tbody").innerHTML = p.lines.map(function (l) {
+      var links = l.kw ? '<div class="buylinks">' + ["1688", "淘宝", "京东"].map(function (s) {
+        return '<a href="' + buyUrl(l.kw, s) + '" target="_blank" rel="noopener">' + s + "</a>";
+      }).join("") + "</div>" : '<span class="band">—</span>';
+      return "<tr><td class='name'>" + esc(l.name) + "</td><td class='spec'>" + esc(l.spec) + "</td>" +
+        "<td class='n'>¥" + l.price + "<div class='band'>" + l.lo + "–" + l.hi + "</div></td>" +
+        "<td>" + links + "</td></tr>";
+    }).join("");
+    $("totalTxt").textContent = "¥" + p.total;
+    $("totalRange").textContent = "区间 " + p.totalMin + "–" + p.totalMax + " 元（不含运费）";
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  /* ---------- 搜索链接：1688 要 GBK ---------- */
+  var gbkMap = null;
+  function buildGbk() {
+    var m = {}, dec;
+    try { dec = new TextDecoder("gbk"); } catch (e) { return null; }
+    for (var hi = 0x81; hi <= 0xFE; hi++) {
+      for (var lo = 0x40; lo <= 0xFE; lo++) {
+        if (lo === 0x7F) continue;
+        var ch;
+        try { ch = dec.decode(new Uint8Array([hi, lo])); } catch (e) { continue; }
+        if (ch && ch.length === 1 && ch !== "\uFFFD" && !m[ch]) m[ch] = hi.toString(16).toUpperCase() + lo.toString(16).toUpperCase();
+      }
+    }
+    return m;
+  }
+  function gbkPct(str) {
+    if (!gbkMap) gbkMap = buildGbk();
+    var out = "", i, ch, h;
+    for (i = 0; i < str.length; i++) {
+      ch = str[i];
+      if (ch === " ") { out += "%20"; continue; }
+      if (gbkMap && gbkMap[ch]) { h = gbkMap[ch]; out += "%" + h.slice(0, 2) + "%" + h.slice(2); }
+      else out += encodeURIComponent(ch);
+    }
+    return out;
+  }
+  function buyUrl(kw, site) {
+    if (site === "1688") return "https://s.1688.com/selloffer/offer_search.htm?keywords=" + gbkPct(kw);
+    if (site === "淘宝") return "https://s.taobao.com/search?q=" + encodeURIComponent(kw);
+    return "https://search.jd.com/Search?keyword=" + encodeURIComponent(kw);
+  }
+
+  /* ---------- 正视图 ---------- */
+  function svg(p, angle) {
+    var Wo = p.Wo, H = p.H, t = p.t, railH = p.rail.h;
+    var ML = 118, MR = 98, MT = 68, MB = 40;
+    var vw = Wo + ML + MR, vh = H + MT + MB;
+    var X = function (x) { return ML + x; };
+    var Y = function (y) { return vh - MB - y; };
+    var o = [];
+    var AC = "#e6f2f5", AC_S = "#a8c6ce";          // 亚克力（淡青）
+    var ALU = "#cdd2d9", ALU_S = "#98a1ab";          // 铝梁
+    o.push('<svg viewBox="0 0 ' + vw + ' ' + vh + '" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,PingFang SC,sans-serif" font-size="12">');
+    o.push('<rect width="100%" height="100%" fill="#fbfcfd"/>');
+
+    // 脚
+    if (p.feet.h > 0) {
+      [0, Wo - 24].forEach(function (x0) {
+        o.push(rect(X(x0), Y(p.feet.h), 24, p.feet.h, "#6b737d", "#4d545c", 1));
+      });
+    }
+
+    for (var j = 0; j < p.N; j++) {
+      var yb = p.feet.h + j * p.Hl;           // 这一层的底
+      // 盒体（侧板、后板、底板）
+      o.push(rect(X(0), Y(yb + p.Hl), t, p.Hl, AC, AC_S, 0.9));
+      o.push(rect(X(Wo - t), Y(yb + p.Hl), t, p.Hl, AC, AC_S, 0.9));
+      o.push(rect(X(t), Y(yb + p.Hl), p.Wi, p.Hl, AC, AC_S, 0.35));
+      o.push(rect(X(0), Y(yb + t), Wo, t, AC, AC_S, 1));
+
+      // 前沿铝梁（压在这一层的上沿）
+      o.push(rect(X(0), Y(yb + p.Hl), Wo, railH, ALU, ALU_S, 1));
+      o.push('<circle cx="' + X(3) + '" cy="' + Y(yb + p.Hl - railH / 2) + '" r="2.4" fill="#2b2f33"/>');
+      o.push('<circle cx="' + X(Wo - 3) + '" cy="' + Y(yb + p.Hl - railH / 2) + '" r="2.4" fill="#2b2f33"/>');
+
+      // 门（最上层按选择角度打开）
+      var openHere = (j === p.N - 1) && angle > 0 && p.doors > 0;
+      if (p.doors > 0 && !openHere) {
+        o.push(rect(X(1), Y(yb + p.Hl - railH) , Wo - 2, p.doorH, "#dceef3", "#8fb4be", 0.55));
+      } else if (openHere) {
+        var rad = angle * Math.PI / 180;
+        var hy = yb + p.Hl - railH;          // 合页轴线（门从此往下挂）
+        var ys = Y(hy);                       // 屏幕坐标
+        var back = p.doorH * Math.cos(rad);   // 正视图里门被"压扁"到的高度
+        // 关到位时的门（虚线幽灵，用来看"压扁"了多少）
+        o.push('<rect x="' + X(1) + '" y="' + ys + '" width="' + (Wo - 2) + '" height="' + p.doorH +
+          '" fill="none" stroke="#b45309" stroke-dasharray="3 3" stroke-width="1" stroke-opacity="0.55"/>');
+        // 正视投影：门是一块高 doorH·cosθ 的矩形，上边贴在合页轴上
+        o.push(rect(X(0), ys, Wo, Math.max(6, back), "#dceef3", "#7ea6b2", 0.85));
+        [0.18, 0.82].forEach(function (fx) {
+          o.push('<circle cx="' + X(Wo * fx) + '" cy="' + ys + '" r="3.2" fill="#b98d4a" stroke="#96682f" stroke-width="0.6"/>');
+        });
+        o.push('<text x="' + X(Wo / 2) + '" y="' + (ys + back - 24) + '" text-anchor="middle" fill="#0f6b78" font-size="11.5">门开 ' +
+          angle + "°（任意停）</text>");
+        o.push('<text x="' + X(Wo / 2) + '" y="' + (ys + back - 8) + '" text-anchor="middle" fill="#7d8a93" font-size="10.5">正视投影 ' +
+          Math.round(back) + " mm = 门高 " + p.doorH + " × cos" + angle + "°</text>");
+        // 左下角小侧视图：门到底掀到哪
+        o.push(sideInset(8, vh - MB - 116, 74, 104, angle, p.doorH));
+        // 左下角小侧视图：门到底掀到哪
+        o.push(sideInset(8, vh - MB - 116, 74, 104, angle, p.doorH));
+      }
+
+      // 手指槽（门顶半圆，只露下半圆；拉开的门不画）
+      if (p.doors > 0 && !openHere) {
+        var cx = X(Wo / 2), cy = Y(yb + p.Hl - railH);
+        o.push('<path d="M' + (cx - 9) + ' ' + cy + ' A9 9 0 0 0 ' + (cx + 9) + ' ' + cy +
+          '" fill="#fbfcfd" stroke="#8fb4be" stroke-width="0.9"/>');
+      }
+      // 层间定位销
+      if (j < p.N - 1) {
+        [0.15, 0.85].forEach(function (fx) {
+          o.push('<circle cx="' + X(Wo * fx) + '" cy="' + Y(yb + p.Hl) + '" r="2" fill="#2b2f33" fill-opacity="0.35"/>');
+        });
+      }
+    }
+
+    // 顶盖
+    if (p.lid.th > 0) {
+      o.push(rect(X(0), Y(H - p.feet.h) + (t - p.lid.th), Wo, p.lid.th, AC, AC_S, 1));
+    }
+
+    // 尺寸线
+    o.push(dimH(X(0), X(Wo), Y(H) - 20, Wo + " mm"));
+    o.push(dimV(Y(0), Y(H), X(0) - 30, H + " mm", -90));
+    if (p.doors) {
+      o.push(dimV(Y(p.feet.h + p.Hl - railH - p.doorH), Y(p.feet.h + p.Hl - railH), X(Wo) + 26, "门 " + p.doorH, -90, 12));
+    }
+    o.push(dimV(Y(p.feet.h), Y(p.feet.h + p.Hl), X(Wo) + 60, "层 " + p.Hl, -90, 12));
+
+    // 图例
+    var lg = [
+      ["亚克力 " + p.sheet.th + " mm", AC, AC_S],
+      ["铝梁 " + railH + " mm", ALU, ALU_S],
+      ["任意停合页", "#b98d4a", "#96682f"],
+      ["端盖", "#2b2f33", "#2b2f33"]
+    ];
+    var lx = 10;
+    lg.forEach(function (it) {
+      o.push(rect(lx, 8, 9, 9, it[1], it[2], 1));
+      o.push('<text x="' + (lx + 13) + '" y="17" fill="#6b7780" font-size="10.5">' + esc(it[0]) + "</text>");
+      lx += 18 + it[0].replace(/[^\x00-\xff]/g, "aa").length * 5.6;
+    });
+    o.push('<text x="' + X(Wo / 2) + '" y="' + (vh - 10) + '" text-anchor="middle" fill="#9aa3ad" font-size="11">' +
+      "正视图 · " + p.N + " 层 · " + p.sheet.label + " · " + (p.doors ? (p.doors === 1 ? "单开门" : "双开门") : "无门") + "</text>");
+    o.push("</svg>");
+    return o.join("");
+  }
+  function woW(p, f) { return p.Wo * f; }
+  function rect(x, y, w, h, fill, stroke, op) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h +
+      '" fill="' + fill + '" fill-opacity="' + (op == null ? 1 : op) + '" stroke="' + stroke + '" stroke-width="1"/>';
+  }
+  function dimH(x1, x2, y, label) {
+    return '<g stroke="#b45309" stroke-width="1" fill="none"><path d="M' + x1 + " " + y + "H" + x2 +
+      '"/><path d="M' + x1 + " " + (y - 4) + "v8M" + x2 + " " + (y - 4) + 'v8"/></g>' +
+      '<text x="' + (x1 + x2) / 2 + '" y="' + (y - 7) + '" text-anchor="middle" fill="#b45309" font-size="11.5">' + label + "</text>";
+  }
+  function dimV(y1, y2, x, label, rot, dx) {
+    var ymid = (y1 + y2) / 2;
+    var tx = x + (dx || 0);
+    var t = '<text x="' + tx + '" y="' + ymid + '" text-anchor="middle" fill="#b45309" font-size="11.5" transform="rotate(' + rot + " " + tx + " " + ymid + ')">' + label + "</text>";
+    return '<g stroke="#b45309" stroke-width="1" fill="none"><path d="M' + x + " " + y1 + "V" + y2 + '"/>' +
+      '<path d="M' + (x - 4) + " " + y1 + "h8M" + (x - 4) + " " + y2 + 'h8"/></g>' + t;
+  }
+  /* 左下角小侧视图：看清门向前掀到了哪个角度（正视图是压缩过的，看不出角度） */
+  function sideInset(x0, y0, w, h, angle, doorH) {
+    var rad = angle * Math.PI / 180;
+    var cx = x0 + 12, cy = y0 + 12;             // 合页（侧视里在左上）
+    var L = Math.min(h - 26, doorH * 0.9);      // 门在侧视图里的长度（按比例示意）
+    var ex = cx + L * Math.sin(rad), ey = cy + L * Math.cos(rad);
+    var o = [];
+    o.push('<g>');
+    o.push('<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="6" fill="#fff" fill-opacity="0.75" stroke="#d7dee3"/>');
+    o.push('<text x="' + (x0 + 8) + '" y="' + (y0 + 12) + '" fill="#8d99a3" font-size="9.5">侧视</text>');
+    // 铝梁截面
+    o.push('<rect x="' + (x0 + 6) + '" y="' + (y0 + 20) + '" width="' + (w - 12) + '" height="6" fill="#cdd2d9" stroke="#98a1ab"/>');
+    o.push('<circle cx="' + cx + '" cy="' + (y0 + 26) + '" r="2.4" fill="#b98d4a"/>');
+    // 关门位置（虚线）
+    o.push('<path d="M' + cx + ' ' + (y0 + 26) + "V" + (y0 + 26 + L) + '" stroke="#c3ccd2" stroke-dasharray="2 3" fill="none"/>');
+    // 门
+    o.push('<path d="M' + cx + ' ' + (y0 + 26) + "L" + ex + " " + (ey + 12) + '" stroke="#0f6b78" stroke-width="2"/>');
+    // 摆动弧
+    o.push('<path d="M' + cx + ' ' + (y0 + 26 + L) + ' A' + L + ' ' + L + ' 0 0 1 ' + ex + ' ' + (ey + 12) +
+      '" stroke="#b45309" stroke-dasharray="2 3" fill="none"/>');
+    o.push('<text x="' + (x0 + w / 2) + '" y="' + (y0 + h - 6) + '" text-anchor="middle" fill="#b45309" font-size="9.5">' + angle + "°</text>");
+    o.push("</g>");
+    return o.join("");
+  }
+
+  /* ---------- 复制 / 下载 ---------- */
+  function copy(text, btn) {
+    var done = function () { if (btn) { var t = btn.textContent; btn.textContent = "已复制 ✓"; setTimeout(function () { btn.textContent = t; }, 1400); } };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); done();
+    }
+  }
+  function download(name, text) {
+    var blob = new Blob(["\ufeff" + text], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  $("btnCopy").onclick = function () { copy(T.toText(last), this); };
+  $("btnCopy2").onclick = function () { copy(T.toText(last), this); };
+  $("btnCopy3").onclick = function () { copy(bomText(last), this); };
+  $("btnCsv").onclick = function () { download("亚克力展示盒-切料清单.csv", T.toCSV(last)); };
+  $("btnCsv2").onclick = function () { download("亚克力展示盒-切料清单.csv", T.toCSV(last)); };
+  $("btnCsv3").onclick = function () { download("亚克力展示盒-采购清单.csv", T.toCSV(last)); };
+  $("btnPrint").onclick = function () { window.print(); };
+  function bomText(p) {
+    return p.lines.map(function (l) {
+      return l.name + "  " + l.spec + "  ¥" + l.price + "（区间 " + l.lo + "–" + l.hi + "）";
+    }).join("\n") + "\n合计 ≈ ¥" + p.total + "（区间 " + p.totalMin + "–" + p.totalMax + "，不含运费）";
+  }
+
+  /* ---------- URL 参数 ---------- */
+  (function () {
+    var q = {};
+    (location.search || "").replace(/^\?/, "").split("&").forEach(function (kv) {
+      var a = kv.split("=");
+      if (a[0]) q[decodeURIComponent(a[0])] = decodeURIComponent(a[1] || "");
+    });
+    if (q.n) state.N = Math.max(1, Math.min(6, Number(q.n)));
+    ["w", "d", "h"].forEach(function (k) { var v = Number(q[k]); if (v) state[k.toUpperCase()] = v * 10; });
+    ["sheet", "rail", "hinge", "lid", "feet"].forEach(function (k) { if (q[k]) state[k] = q[k]; });
+    if (q.open) state.angle = Math.max(0, Math.min(90, Number(q.open)));
+    if (q.tab) setTimeout(function () { setTab(q.tab); }, 0);
+  })();
+
+  /* ---------- 初始化 ---------- */
+  syncInputs();
+  render();
+  if (/debug=gbk/.test(location.search)) document.title = "GBK:" + gbkPct("亚克力 test");
+  if (/debug=1/.test(location.search)) {
+    document.title = "W" + innerWidth + " SW" + document.documentElement.scrollWidth +
+      " CW" + document.body.scrollWidth + " wrap" + document.querySelector(".wrap").scrollWidth;
+  }
+  window.__display = { state: state, get: function () { return last; } };
+})();
+</script>
+</body>
+</html>

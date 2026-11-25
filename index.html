@@ -33,14 +33,13 @@
   h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
 
   /* 两个大卡片 */
-  .heroes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media (max-width:1080px){.heroes{grid-template-columns:1fr 1fr}}
+  .heroes{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media (max-width:1280px){.heroes{grid-template-columns:1fr 1fr}}
   @media (max-width:700px){.heroes{grid-template-columns:1fr}}
   .hero{background:var(--card);border:1px solid var(--line);border-radius:16px;
     box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:.18s}
   .hero:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(16,24,40,.10)}
-  @media (max-width:700px){.hero .thumb{height:230px}}
-  .hero .thumb{height:170px;background:linear-gradient(180deg,#eef3f7,#e3ebf1);
+  .hero .thumb{aspect-ratio:1000/457;height:auto;background:linear-gradient(180deg,#eef3f7,#e3ebf1);
     display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--line)}
   .hero .thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
   .hero .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
@@ -95,19 +94,19 @@
 <body>
 <header>
   <h1>自制家具 · 项目首页</h1>
-  <p>光轴展示架 · 铝型材抽屉柜 · 桌面收纳柜，三套方案的全部资料：尺寸算法、切料与采购清单、装配步骤、3D 打印文件。全部离线可用，双击即开。</p>
+  <p>光轴展示架 · 铝型材抽屉柜 · 桌面收纳柜 · 亚克力展示盒，四套方案的全部资料：尺寸算法、切料与采购清单、装配步骤、3D 打印文件。全部离线可用，双击即开。</p>
 </header>
 
 <div class="wrap">
   <div class="searchbar">
-    <input id="q" type="search" placeholder="搜一下：亚克力 / 十字夹 / 抽屉 / 收纳盆 / 导轨 / STL / 装配…" autocomplete="off">
+    <input id="q" type="search" placeholder="搜一下：亚克力 / 十字夹 / 抽屉 / 收纳盆 / 手办 / 合页 / 导轨 / STL / 装配…" autocomplete="off">
     <span class="count" id="count"></span>
   </div>
 
   <div class="empty" id="noneHit">没有匹配的文件，换个词试试（比如「亚克力」「导轨」「STL」）。</div>
 
   <section class="grp">
-  <h2 class="sec">三个方案</h2>
+  <h2 class="sec">四个方案</h2>
   <div class="heroes">
     <section class="hero" data-s="光轴 展示架 车模 1:64 层数 规划器 亚克力 灯箱 安装">
       <div class="thumb"><img src="planner/thumb-shelf.png" alt="光轴展示架规划器界面"></div>
@@ -162,6 +161,23 @@
         </div>
       </div>
     </section>
+    <section class="hero" data-s="亚克力 展示盒 手办 球鞋 潮玩 模型 合页 任意停 悬停 面板 层数 叠加 切料 防尘">
+      <div class="thumb"><img src="planner/thumb-display.png" alt="亚克力展示盒规划器界面"></div>
+      <div class="body">
+        <h3>亚克力展示盒 · 悬停面板</h3>
+        <p class="desc">每层一个粘好的亚克力盒，前沿压一根铝梁，两片任意停合页把门挂上去——推到哪里停哪里。层数靠叠，加层就是再放一个盒子上去。</p>
+        <div class="stats">
+          <div><b>3</b>层（可叠到 6）</div>
+          <div><b>814</b>总高 mm</div>
+          <div><b>¥711</b>整套预估</div>
+          <div><b>2 h</b>装完</div>
+        </div>
+        <div class="cta">
+          <a class="primary" href="planner/display.html">打开规划器</a>
+          <a href="亚克力展示盒.md">方案说明</a>
+        </div>
+      </div>
+    </section>
   </div>
   </section>
 
@@ -195,6 +211,11 @@
       <a class="item" href="铝型材桌面柜.md" data-s="桌面 收纳柜 铝型材 盆 顶板 配色 下单 话术 装配 坑 预算">
         <div class="ico">MD</div>
         <div class="txt"><b>桌面收纳柜 · 方案说明</b><span>结构拆解、尺寸公式、切料表与下单话术、¥303 清单、9 步装配、六个坑、三套配色</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="亚克力展示盒.md" data-s="亚克力 展示盒 手办 球鞋 潮玩 合页 任意停 悬停 下单 话术 装配 坑 预算">
+        <div class="ico">MD</div>
+        <div class="txt"><b>亚克力展示盒方案</b><span>盒体 + 铝梁 + 任意停合页的结构拆解、尺寸公式、切料表与下单话术、¥711 明细、装配 10 步、六个坑</span></div>
         <div class="go">打开 →</div>
       </a>
       <a class="item" href="petg/打印说明.md" data-s="PETG 打印 层板 透明 参数 切片 耗材 打印说明 加强片">
@@ -289,9 +310,24 @@
         <div class="txt"><b>cabinet-dom-test.sh · 28 项渲染回归</b><span>四页签、13 步、比价链接、端盖三选一</span></div>
         <div class="go">打开 →</div>
       </a>
+      <a class="item" href="planner/display-core.js" data-s="源码 display-core 展示盒 亚克力 合页 尺寸 切料 报价">
+        <div class="ico">JS</div>
+        <div class="txt"><b>display-core.js</b><span>展示盒计算核心：盒体/门/铝梁/合页/报价/装配步骤，浏览器与 Node 通用</span></div>
+        <div class="go">查看 →</div>
+      </a>
+      <a class="item" href="planner/display-test.js" data-s="测试 display 回归 node 120">
+        <div class="ico">JS</div>
+        <div class="txt"><b>display-test.js</b><span>核心回归测试，120 项（node display-test.js）</span></div>
+        <div class="go">查看 →</div>
+      </a>
+      <a class="item" href="planner/display-dom-test.sh" data-s="测试 display dom 浏览器 渲染 headless chrome">
+        <div class="ico">SH</div>
+        <div class="txt"><b>display-dom-test.sh</b><span>真实浏览器渲染测试，59 项（bash display-dom-test.sh）</span></div>
+        <div class="go">查看 →</div>
+      </a>
       <a class="item" href="README.md" data-s="说明 readme 仓库 介绍 github 许可">
         <div class="ico">MD</div>
-        <div class="txt"><b>README.md · 仓库说明</b><span>三套方案总览、快速开始、目录结构、测试、许可</span></div>
+        <div class="txt"><b>README.md · 仓库说明</b><span>四套方案总览、快速开始、目录结构、测试、许可</span></div>
         <div class="go">打开 →</div>
       </a>
       <a class="item" href="打包与发布.md" data-s="说明 桌面 快捷方式 github 上传 pages 发布">
@@ -323,7 +359,7 @@
   </details>
 
   <div class="note">
-    <b>怎么用：</b>先看上面三套方案的规划器，把家里的空间尺寸填进去；<br>
+    <b>怎么用：</b>先看上面四套方案的规划器，把家里的空间尺寸填进去；<br>
     <b>下单：</b>材料清单页的「下单话术」整段复制给卖家，别自己拆成一句句发；<br>
     <b>动手：</b>规划器里的「装配」页可以打印出来贴在墙上，每步都有验收标准。
   </div>
