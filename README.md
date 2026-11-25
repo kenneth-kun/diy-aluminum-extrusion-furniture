@@ -29,7 +29,7 @@ index.html          ← 双击，浏览器打开项目首页
 ### 方式 2：本地起个静态服务（推荐，复制链接、截图更稳）
 
 ```bash
-cd 光轴置物架
+cd diy-furniture-planner   # 或你 clone 下来的目录名
 python3 -m http.server 8000
 # 打开 http://localhost:8000/
 ```
