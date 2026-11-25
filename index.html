@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自制家具 · 项目首页</title>
+<style>
+  :root{
+    --ink:#23293a; --muted:#6b7280; --line:#e6e8ec; --bg:#f5f6f8; --card:#fff;
+    --accent:#2c7a8c; --accent-2:#3f97ab; --soft:#e9f4f7;
+    --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{padding:34px 24px 6px;max-width:1120px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 6px;letter-spacing:.3px}
+  header p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 24px 70px}
+
+  /* 搜索 */
+  .searchbar{display:flex;gap:10px;align-items:center;margin:18px 0 22px}
+  .searchbar input{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:11px;
+    font-family:inherit;font-size:13.5px;background:#fff;color:var(--ink)}
+  .searchbar input:focus{outline:2px solid var(--accent-2);outline-offset:1px}
+  .searchbar .count{font-size:12px;color:var(--muted);white-space:nowrap}
+
+  h2.sec{font-size:12px;letter-spacing:.1em;color:var(--muted);font-weight:600;
+    margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+  h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* 两个大卡片 */
+  .heroes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:1080px){.heroes{grid-template-columns:1fr 1fr}}
+  @media (max-width:700px){.heroes{grid-template-columns:1fr}}
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:.18s}
+  .hero:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(16,24,40,.10)}
+  @media (max-width:700px){.hero .thumb{height:230px}}
+  .hero .thumb{height:170px;background:linear-gradient(180deg,#eef3f7,#e3ebf1);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
+  .hero .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .hero h3{margin:0;font-size:16px}
+  .hero .desc{margin:0;font-size:12.5px;line-height:1.7;color:#4b5563}
+  .stats{display:flex;gap:14px;flex-wrap:wrap}
+  .stats div{font-size:11.5px;color:var(--muted)}
+  .stats b{display:block;font-size:17px;color:var(--accent);font-variant-numeric:tabular-nums;margin-bottom:1px}
+  .cta{display:flex;gap:8px;margin-top:auto;padding-top:4px}
+  .cta a{flex:1;text-align:center;padding:9px 10px;border-radius:9px;font-size:12.5px;
+    border:1px solid var(--line);color:#4b5563;background:#fff}
+  .cta a.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .cta a:hover{text-decoration:none;border-color:var(--accent-2)}
+  .cta a.primary:hover{background:#25707f;border-color:#25707f}
+
+  /* 文件列表 */
+  .list{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f1f2f4;
+    text-decoration:none;color:inherit}
+  .item:last-child{border-bottom:0}
+  .item:hover{background:#fafcfd;text-decoration:none}
+  .item .ico{width:30px;height:30px;border-radius:8px;background:var(--soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+  .item .txt{flex:1;min-width:0}
+  .item .txt b{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+  .item .txt span{display:block;font-size:11.5px;color:var(--muted);line-height:1.55}
+  .item .go{font-size:11.5px;color:var(--accent);white-space:nowrap}
+  .item.dim{opacity:.62}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.cols{grid-template-columns:1fr}}
+
+  details.more{margin-top:22px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;box-shadow:var(--shadow);padding:14px 16px}
+  details.more summary{cursor:pointer;font-size:12.5px;color:#4b5563;list-style:none;display:flex;
+    align-items:center;gap:8px;user-select:none}
+  details.more summary::-webkit-details-marker{display:none}
+  details.more summary::before{content:"+";display:inline-flex;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--line);align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+  details.more[open] summary::before{content:"−"}
+  details.more .list{margin-top:12px;box-shadow:none;border:0}
+  details.more .item{padding:10px 0}
+
+  .note{margin-top:22px;background:#fffdf6;border:1px solid #f2e6c8;border-radius:12px;
+    padding:14px 16px;font-size:12.5px;line-height:1.75;color:#6b5b35}
+  .note b{color:#8a6a1f}
+  footer{margin-top:34px;font-size:11.5px;color:var(--muted);line-height:1.8;text-align:center}
+  .empty{display:none;padding:26px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>自制家具 · 项目首页</h1>
+  <p>光轴展示架 · 铝型材抽屉柜 · 桌面收纳柜，三套方案的全部资料：尺寸算法、切料与采购清单、装配步骤、3D 打印文件。全部离线可用，双击即开。</p>
+</header>
+
+<div class="wrap">
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="搜一下：亚克力 / 十字夹 / 抽屉 / 收纳盆 / 导轨 / STL / 装配…" autocomplete="off">
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="empty" id="noneHit">没有匹配的文件，换个词试试（比如「亚克力」「导轨」「STL」）。</div>
+
+  <section class="grp">
+  <h2 class="sec">三个方案</h2>
+  <div class="heroes">
+    <section class="hero" data-s="光轴 展示架 车模 1:64 层数 规划器 亚克力 灯箱 安装">
+      <div class="thumb"><img src="planner/thumb-shelf.png" alt="光轴展示架规划器界面"></div>
+      <div class="body">
+        <h3>光轴展示架 · 层数规划器</h3>
+        <p class="desc">4 根镀铬光轴 + 十字夹 + 亚克力层板，顶部一块导光板照亮全部层。输入空间或车模数量，自动算层数、层距、每层几台。</p>
+        <div class="stats">
+          <div><b>7</b>层（默认）</div>
+          <div><b>10</b>台/层</div>
+          <div><b>¥1153</b>亚克力方案</div>
+          <div><b>¥626</b>PETG 打印</div>
+        </div>
+        <div class="cta">
+          <a class="primary" href="planner/index.html">打开规划器</a>
+          <a href="材料清单.md">材料清单</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero" data-s="铝型材 抽屉 柜 收纳 切料 导轨 长虹 亚克力 不锈钢 台面 万向轮">
+      <div class="thumb"><img src="planner/thumb-cabinet.png" alt="铝型材抽屉柜规划器界面"></div>
+      <div class="body">
+        <h3>铝型材抽屉柜 · 切料规划器</h3>
+        <p class="desc">3030 外框 + 2020 抽屉框，长虹纹亚克力面板、不锈钢台面、三节导轨。改尺寸就出切料表、装配步骤和采购清单。</p>
+        <div class="stats">
+          <div><b>4</b>抽（默认）</div>
+          <div><b>155</b>单抽净高 mm</div>
+          <div><b>¥1217</b>整套预估</div>
+          <div><b>14.06</b>型材总长 m</div>
+        </div>
+        <div class="cta">
+          <a class="primary" href="planner/cabinet.html">打开规划器</a>
+          <a href="铝型材柜.md">方案说明</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero" data-s="铝型材 桌面 收纳 柜 盆 抽屉 切料 顶板 亚克力 琥珀 端盖 配色 便宜 新手">
+      <div class="thumb"><img src="planner/thumb-tray.png" alt="桌面收纳柜规划器界面"></div>
+      <div class="body">
+        <h3>桌面收纳柜 · 盆位规划器</h3>
+        <p class="desc">2020 型材搭框，买来的塑料盆直接坐在横梁上滑动，不打孔、不装导轨、压一块琥珀色亚克力顶板。三套里最便宜、最快做完的一套。</p>
+        <div class="stats">
+          <div><b>3</b>层（默认）</div>
+          <div><b>150</b>层距 mm</div>
+          <div><b>¥303</b>整套预估</div>
+          <div><b>1.5 h</b>装完</div>
+        </div>
+        <div class="cta">
+          <a class="primary" href="planner/tray.html">打开规划器</a>
+          <a href="铝型材桌面柜.md">方案说明</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  </section>
+
+  <section class="grp">
+  <h2 class="sec">图纸与清单</h2>
+  <div class="cols">
+    <div class="list">
+      <a class="item" href="尺寸图.png" data-s="尺寸图 三视图 图纸 正视图 侧视图 俯视图 标注">
+        <div class="ico">PNG</div>
+        <div class="txt"><b>尺寸图（三视图）</b><span>整体 600×300×500、层距 60、层板四角 35 缺口，右侧尺寸速查与换算公式</span></div>
+        <div class="go">查看 →</div>
+      </a>
+      <a class="item" href="材料清单.md" data-s="材料清单 购买 光轴 十字夹 亚克力 灯箱 电源 下单 话术 拼装 坑">
+        <div class="ico">MD</div>
+        <div class="txt"><b>材料清单（光轴方案）</b><span>16 项必买 + 选配、下单话术、10 步拼装、7 个常见坑、改尺寸公式</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="采购清单.csv" data-s="采购清单 csv excel 价格 必选 选配">
+        <div class="ico">CSV</div>
+        <div class="txt"><b>采购清单.csv</b><span>必选 1188 元 + 选配 211 元，Excel 可直接打开比价</span></div>
+        <div class="go">打开 →</div>
+      </a>
+    </div>
+
+    <div class="list">
+      <a class="item" href="铝型材柜.md" data-s="铝型材 抽屉柜 说明 下单 话术 装配 坑 预算">
+        <div class="ico">MD</div>
+        <div class="txt"><b>铝型材柜 · 方案说明</b><span>结构拆解、五段下单话术、12 步装配、8 个坑、预算表与省钱改法</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="铝型材桌面柜.md" data-s="桌面 收纳柜 铝型材 盆 顶板 配色 下单 话术 装配 坑 预算">
+        <div class="ico">MD</div>
+        <div class="txt"><b>桌面收纳柜 · 方案说明</b><span>结构拆解、尺寸公式、切料表与下单话术、¥303 清单、9 步装配、六个坑、三套配色</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="petg/打印说明.md" data-s="PETG 打印 层板 透明 参数 切片 耗材 打印说明 加强片">
+        <div class="ico">MD</div>
+        <div class="txt"><b>3D 打印说明（PETG 层板）</b><span>透明 PETG 参数、42 片瓦片拼接、加强片、成本对比与更划算的替代</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="petg/stl/print_plan.md" data-s="打印计划 盘数 耗材 时间 克重">
+        <div class="ico">MD</div>
+        <div class="txt"><b>打印计划</b><span>每片克重/耗时、盘数与总耗材，逐件核对用</span></div>
+        <div class="go">打开 →</div>
+      </a>
+    </div>
+  </div>
+  </section>
+
+  <section class="grp">
+  <h2 class="sec">3D 打印文件</h2>
+  <div class="cols">
+    <div class="list">
+      <a class="item" href="petg/preview_assembly.png" data-s="预览 拼接 六片 编号 拼缝">
+        <div class="ico">PNG</div>
+        <div class="txt"><b>拼接预览图</b><span>一层 6 片编号、拼缝位置、加强片粘贴示意</span></div>
+        <div class="go">查看 →</div>
+      </a>
+      <a class="item" href="petg/preview_tile.png" data-s="预览 剖面 筋位 皮厚">
+        <div class="ico">PNG</div>
+        <div class="txt"><b>瓦片剖面图</b><span>面层 1mm / 筋 2mm / 总厚 3mm 的加强结构</span></div>
+        <div class="go">查看 →</div>
+      </a>
+      <a class="item" href="petg/stl/tile_full.stl" data-s="STL 瓦片 实心 tile_full 切片">
+        <div class="ico">STL</div>
+        <div class="txt"><b>tile_full.stl</b><span>186.7×135×3 mm，39 g / 3.5 h，最常用的一片</span></div>
+        <div class="go">下载 →</div>
+      </a>
+    </div>
+    <div class="list">
+      <a class="item" href="petg/stl/coupon.stl" data-s="STL 试片 coupon 先打 校准">
+        <div class="ico">STL</div>
+        <div class="txt"><b>coupon.stl · 先打这个</b><span>20 分钟试片，用来定透明度和拼缝强度</span></div>
+        <div class="go">下载 →</div>
+      </a>
+      <a class="item" href="petg/stl/tile_frame.stl" data-s="STL 边框 tile_frame 省料 1.5mm PET">
+        <div class="ico">STL</div>
+        <div class="txt"><b>tile_frame.stl（省料版）</b><span>只打边框 + 1.5mm PET 片，用料降到 1.21 kg</span></div>
+        <div class="go">下载 →</div>
+      </a>
+      <a class="item" href="petg/stl/lip.stl" data-s="STL 挡边 lip 前沿">
+        <div class="ico">STL</div>
+        <div class="txt"><b>lip.stl · 前沿挡边</b><span>15mm 高挡边，防止小车滑落</span></div>
+        <div class="go">下载 →</div>
+      </a>
+    </div>
+  </div>
+  </section>
+
+  <details class="more">
+    <summary>源码与测试（想改算法或复现验证时用）</summary>
+    <div class="list">
+      <a class="item" href="planner/planner-core.js" data-s="源码 planner-core 算法 层数 车位">
+        <div class="ico">JS</div>
+        <div class="txt"><b>planner-core.js</b><span>光轴规划器内核：层距/层数/车位节距/打印计划/装配步骤</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/cabinet-core.js" data-s="源码 cabinet-core 切料 抽屉 导轨 面板">
+        <div class="ico">JS</div>
+        <div class="txt"><b>cabinet-core.js</b><span>铝型材柜内核：内空/抽屉/导轨档位/切料/造价</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/tray-core.js" data-s="源码 tray-core 桌面 收纳 盆 尺寸 切料 报价">
+        <div class="ico">JS</div>
+        <div class="txt"><b>tray-core.js · 桌面柜算法</b><span>盆 → 外廓/层距/立柱/切料/五金/报价，UMD 可 Node require</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/tray-test.js" data-s="测试 tray 回归 node 78">
+        <div class="ico">JS</div>
+        <div class="txt"><b>tray-test.js · 96 项回归</b><span>公式自洽、切料、五金、参数组合、警告、配色、导出（node tray-test.js）</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/tray-dom-test.sh" data-s="测试 tray dom 浏览器 渲染 headless chrome">
+        <div class="ico">SH</div>
+        <div class="txt"><b>tray-dom-test.sh · 45 项渲染回归</b><span>headless Chrome 逐页断言，含布局溢出检查</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/cabinet-test.js" data-s="测试 test 回归 node">
+        <div class="ico">TEST</div>
+        <div class="txt"><b>cabinet-test.js · 75 项</b><span>node cabinet-test.js，覆盖切料、面板、五金、警告、导出</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="planner/cabinet-dom-test.sh" data-s="测试 cabinet dom 浏览器 渲染 headless chrome">
+        <div class="ico">SH</div>
+        <div class="txt"><b>cabinet-dom-test.sh · 28 项渲染回归</b><span>四页签、13 步、比价链接、端盖三选一</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="README.md" data-s="说明 readme 仓库 介绍 github 许可">
+        <div class="ico">MD</div>
+        <div class="txt"><b>README.md · 仓库说明</b><span>三套方案总览、快速开始、目录结构、测试、许可</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="打包与发布.md" data-s="说明 桌面 快捷方式 github 上传 pages 发布">
+        <div class="ico">MD</div>
+        <div class="txt"><b>打包与发布.md</b><span>桌面图标怎么生成、GitHub 上传三种方式、Pages 部署</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="tools/打开项目首页.command" data-s="快捷方式 双击 打开 桌面">
+        <div class="ico">SH</div>
+        <div class="txt"><b>打开项目首页.command</b><span>双击直接打开首页，路径自动解析（可做桌面软链接）</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="petg/gen_stl.py" data-s="源码 gen_stl 生成 STL python numpy">
+        <div class="ico">PY</div>
+        <div class="txt"><b>gen_stl.py</b><span>纯 numpy 生成二进制 STL，支持 --bed / --shelf / --mode</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="draw_plan.py" data-s="源码 draw_plan 尺寸图 matplotlib">
+        <div class="ico">PY</div>
+        <div class="txt"><b>draw_plan.py</b><span>用 matplotlib 画三视图并标注尺寸</span></div>
+        <div class="go">打开 →</div>
+      </a>
+      <a class="item" href="petg/bambu_bridge.py" data-s="打印机 bridge MQTT FTPS 拓竹 状态">
+        <div class="ico">PY</div>
+        <div class="txt"><b>bambu_bridge.py</b><span>连拓竹打印机：发现 / 状态 / 暂停 / 停止（上传待 SD 卡）</span></div>
+        <div class="go">打开 →</div>
+      </a>
+    </div>
+  </details>
+
+  <div class="note">
+    <b>怎么用：</b>先看上面三套方案的规划器，把家里的空间尺寸填进去；<br>
+    <b>下单：</b>材料清单页的「下单话术」整段复制给卖家，别自己拆成一句句发；<br>
+    <b>动手：</b>规划器里的「装配」页可以打印出来贴在墙上，每步都有验收标准。
+  </div>
+
+  <footer>所有页面都是单文件离线可用 · 数据只存在本机浏览器（localStorage）</footer>
+</div>
+
+<script>
+(function () {
+  var q = document.getElementById("q");
+  var count = document.getElementById("count");
+  var nodes = Array.prototype.slice.call(document.querySelectorAll("[data-s]"));
+  function apply() {
+    var k = (q.value || "").trim().toLowerCase();
+    var shown = 0;
+    nodes.forEach(function (n) {
+      var hay = (n.dataset.s + " " + n.textContent).toLowerCase();
+      var hit = !k || hay.indexOf(k) >= 0;
+      n.style.display = hit ? "" : "none";
+      if (hit) shown++;
+    });
+    count.textContent = k ? shown + " 项匹配" : "共 " + nodes.length + " 个文件";
+    Array.prototype.forEach.call(document.querySelectorAll("section.grp"), function (grp) {
+      var any = Array.prototype.filter.call(grp.querySelectorAll("[data-s]"), function (n) {
+        return n.style.display !== "none";
+      }).length;
+      grp.style.display = any ? "" : "none";
+    });
+    var all = document.getElementById("noneHit");
+    if (all) all.style.display = (k && shown === 0) ? "block" : "none";
+  }
+  apply();
+  q.addEventListener("input", apply);
+  q.addEventListener("keydown", function (e) { if (e.key === "Escape") { q.value = ""; apply(); } });
+})();
+</script>
+</body>
+</html>

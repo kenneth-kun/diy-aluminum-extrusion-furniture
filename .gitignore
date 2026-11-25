@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# 本地工具（OrcaSlicer 等大型二进制，不入库）
+.tools/
+*.app/
+
+# 打印/切片产物（体积大，按需本地生成）
+*.3mf
+*.gcode
+*.bgcode
+*.stl
+!petg/stl/*.stl
+
+# 编辑器
+.vscode/
+.idea/
