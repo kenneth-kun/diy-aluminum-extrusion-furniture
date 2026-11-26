@@ -21,12 +21,12 @@ if [ ! -f "$DIR/index.html" ]; then
     "$HOME/Documents/deepseek-harness/default-workspace/光轴置物架" \
     "$HOME/Desktop/光轴置物架" \
     "$HOME/Downloads/光轴置物架"; do
-    if [ -f "$d/index.html" ]; then DIR="$d"; break; fi
+    if [ -f "$d/dist/index.html" ]; then DIR="$d"; break; fi
   done
 fi
 
-if [ ! -f "$DIR/index.html" ]; then
-  echo "✗ 没找到 index.html"
+if [ ! -f "$DIR/dist/index.html" ]; then
+  echo "✗ 没找到 dist/index.html（先 npm run build）"
   echo "  当前目录：$DIR"
   echo "  项目好像被移动或改名了，请重新生成桌面快捷方式："
   echo "  tools/创建桌面快捷方式.command"
@@ -39,4 +39,4 @@ if [ "${1:-}" = "--check" ]; then
   exit 0
 fi
 
-open "$DIR/index.html"
+open "$DIR/dist/index.html"

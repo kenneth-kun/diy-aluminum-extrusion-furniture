@@ -28,3 +28,9 @@ npm-debug.log*
 # 编辑器
 .vscode/
 .idea/
+# 构建产物
+dist/
+.deploy/
+
+# 依赖
+node_modules/

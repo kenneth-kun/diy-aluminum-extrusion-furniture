@@ -8,8 +8,10 @@ REAL="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$SRC")
 DIR="$(cd "$(dirname "$REAL")/.." && pwd -P)"
 APP="$HOME/Desktop/自制家具.app"
 
-if [ ! -f "$DIR/index.html" ]; then
-  echo "✗ 没找到 $DIR/index.html"
+PAGE="$DIR/dist/index.html"
+if [ ! -f "$PAGE" ]; then
+  echo "✗ 没找到 $PAGE"
+  echo "  先构建一次：cd \"$DIR\" && npm install && npm run build"
   exit 1
 fi
 
@@ -18,11 +20,11 @@ if [ "${1:-}" != "--yes" ]; then
 fi
 
 rm -rf "$APP"
-osacompile -o "$APP" -e "do shell script \"open \\\"$DIR/index.html\\\"\"" || {
+osacompile -o "$APP" -e "do shell script \"open \\\"$PAGE\\\"\"" || {
   echo "✗ osacompile 失败"; exit 1; }
 
 # 图标：用项目截图做 1024 方图 → icns
-ICON_SRC="$DIR/planner/thumb-shelf.png"
+ICON_SRC="$DIR/public/media/thumb-shelf.png"
 if [ -f "$ICON_SRC" ]; then
   TMP="$(mktemp -d)"
   sips -Z 900 "$ICON_SRC" --out "$TMP/i.png" >/dev/null 2>&1
@@ -41,5 +43,5 @@ fi
 ln -sf "$DIR/tools/打开项目首页.command" "$HOME/Desktop/打开项目首页.command" 2>/dev/null || true
 
 echo "✓ 已生成：$APP"
-echo "  指向：$DIR/index.html"
+echo "  指向：$PAGE"
 open -R "$APP"

@@ -1,0 +1,21 @@
+{
+  "name": "diy-aluminum-extrusion-furniture",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "自制家具规划器：Vue 3 单页应用（光轴展示架 / 铝型材抽屉柜 / 桌面收纳柜 / 亚克力展示盒）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node tests/shelf.test.js && node tests/cabinet.test.js && node tests/tray.test.js && node tests/display.test.js",
+    "test:dom": "bash tests/run-dom-tests.sh"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.11",
+    "vite": "^7.3.8"
+  },
+  "dependencies": {
+    "vue": "^3.5.46"
+  }
+}
