@@ -235,7 +235,11 @@ function reset() { Object.assign(state, DEFAULTS); state.angle = 0; }
         </div>
 
         <div v-else class="tabpane">
-          <StatBar v-if="steps.keyNumbers.length" :dims="steps.keyNumbers.map((k) => ({ label: k.k, value: k.v }))" style="margin-bottom: 14px" />
+          <StatBar
+            v-if="steps.keyNumbers.length"
+            :dims="steps.keyNumbers.map((k) => ({ label: k.k, value: k.v })).concat([{ label: '整箱重量', value: plan.weight + ' kg' }, { label: '材料估算', value: '¥' + totals.total }]).slice(0, 8)"
+            style="margin-bottom: 14px"
+          />
           <StepsList :intro="steps.intro" :steps="steps.steps" :tools="steps.tools" :pitfalls="steps.pitfalls" />
         </div>
       </section>
