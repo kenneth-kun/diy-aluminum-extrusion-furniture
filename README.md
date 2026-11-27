@@ -99,6 +99,27 @@ bash tools/创建桌面快捷方式.command      # 生成 ~/Desktop/自制家具
 
 ---
 
+## 再加一套方案？（一个链接就够）
+
+这套东西的第五、第六套不需要重写工程——`skills/post-to-module/` 里存了一份完整的操作手册（skill），把「刷到一条帖子」到「系统里多一个能算能下单的模块」的十个步骤都写死了：
+
+```
+脚本抓图/抽帧 → 判读结构表 → 写内核（floor5 + 价格区间 + 关键词）
+→ 画正视图 → 写 Vue 页面（四页签）→ 接路由与首页卡片
+→ 补内核测试与 DOM 测试 → 写十节说明书 → 截图验收 → 构建发布
+```
+
+用法（在新会话里）：
+
+```
+把这个帖子加进系统：<帖子链接>
+```
+
+或直接加载技能：`skill post-to-module`。手册本体见 [`skills/post-to-module/SKILL.md`](skills/post-to-module/SKILL.md)，
+里面有 `grab.sh`（抓小红书图文/视频）、`frames.swift`（无 ffmpeg 抽帧）、`shots.sh`（批量截图）、`ship.sh`（构建 + 推送 + gh-pages）四个脚本和内核/页面/测试的骨架模板。
+
+---
+
 ## 目录结构
 
 ```
@@ -129,7 +150,8 @@ bash tools/创建桌面快捷方式.command      # 生成 ~/Desktop/自制家具
 ├── 铝型材柜.md / 铝型材桌面柜.md / 亚克力展示盒.md   ②③④ 说明书
 ├── draw_plan.py               ① 尺寸图绘图脚本（matplotlib）
 ├── petg/                      ① 的 3D 打印方案（STL 生成器、瓦片、打印说明）
-└── tools/                     一键打开 / 创建桌面快捷方式
+├── tools/                     一键打开 / 创建桌面快捷方式
+└── skills/post-to-module/     「一个帖子 → 一个新模块」技能手册 + grab/frames/montage/shots/ship 脚本
 ```
 
 ---
