@@ -35,12 +35,14 @@ fi
 git push -q origin HEAD:main && echo "  ✓ main 已推送"
 
 echo "→ 重建 gh-pages"
+REMOTE_URL="$(git config --get remote.origin.url)"
 rm -rf .deploy && mkdir .deploy
 cp -R dist/. .deploy/
 (
   cd .deploy
   git init -q
   git checkout -q -b gh-pages
+  git remote add origin "$REMOTE_URL"          # 新仓库没有 origin，必须显式加
   git add -A
   git -c user.name="$AUTHOR_NAME" -c user.email="$AUTHOR_EMAIL" commit -q -m "$MSG" \
     --author="$AUTHOR_NAME <$AUTHOR_EMAIL>"
@@ -49,7 +51,7 @@ cp -R dist/. .deploy/
 rm -rf .deploy
 echo "  ✓ gh-pages 已更新"
 
-REPO="$(git config --get remote.origin.url | sed 's#.*github.com[:/]##; s#\.git$##')"
+REPO="$(printf '%s' "$REMOTE_URL" | sed 's#.*github.com[:/]##; s#\.git$##')"
 echo
-echo "线上：https://$(echo "$REPO" | sed 's#/#.github.io/#; s#^\([^.]*\)\.github\.io/#\1.github.io/#')/"
+echo "线上：https://$(echo "$REPO" | sed 's#/#.github.io/#')/"
 echo "提醒：GitHub 仓库 Settings→Pages 必须选 gh-pages 分支（/(root)），否则线上白屏。"
